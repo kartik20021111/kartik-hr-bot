@@ -892,7 +892,7 @@ function EmployeeView({ emp, onLogout, docs }) {
   const cis  = getCIs(emp);
   const QUICK = ["How do I apply for leave?","What all benefits do I have?","What are the onboarding Policies?","What are Flexible Work Options?","What are rewards and recoginition Plans?"];
   const statusColor = ollamaStatus==="ok" ? "#36C97E" : ollamaStatus==="down" ? "#FF5757" : "#8BA8CC";
-  const statusLabel = ollamaStatus==="ok" ? "● Online" : ollamaStatus==="down" ? "● Offline (run: ollama serve)" : "● Checking...";
+  
 
   return (
     <div style={{ display:"flex",flexDirection:"column",height:"100vh",background:E.bg,fontFamily:"'Inter',system-ui,sans-serif",overflow:"hidden" }}>
