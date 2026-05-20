@@ -868,7 +868,7 @@ function EmployeeView({ emp, onLogout, docs }) {
       if (!res.ok) {
         const errMsg =
           data.error==="OLLAMA_NOT_RUNNING"    ? "⚠️ Ollama isn't running. Open a terminal and run: **ollama serve** — then try again." :
-          data.error==="OLLAMA_MODEL_NOT_FOUND"? "⚠️ Model not downloaded yet. Run: **ollama pull llama3.2** — then try again." :
+          data.error==="OLLAMA_MODEL_NOT_FOUND"? "⚠️ Model not downloaded yet. Run: **ollama pull qwen2:1.5b** — then try again." :
           `⚠️ Error: ${data.message||"Something went wrong."} — hr@kartikcorp.in`;
         setMsgs(p=>[...p,{role:"assistant",content:errMsg}]);
       } else {
