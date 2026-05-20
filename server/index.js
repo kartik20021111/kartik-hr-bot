@@ -66,9 +66,7 @@ app.post("/chat", async (req, res) => {
   try {
     console.log("Prompt length:", systemPrompt.length, "chars");
 
-    const ollamaRes = await fetch(
-  `${process.env.OLLAMA_URL || "http://localhost:11434"}/api/chat`,
-  {
+    const ollamaRes = await fetch("http://127.0.0.1:11434/api/chat", {
       method:  "POST",
       headers: { "Content-Type":"application/json" },
       body: JSON.stringify({
@@ -87,15 +85,13 @@ app.post("/chat", async (req, res) => {
     });
 
     if (!ollamaRes.ok) {
-  const errText = await ollamaRes.text();
-
-  console.log("OLLAMA ERROR:", errText);
-
-  return res.status(503).json({
-    error: "OLLAMA_ERROR",
-    message: `Ollama error: ${errText}`,
-  });
-}
+      const errText = await ollamaRes.text();
+      const isMissing = errText.toLowerCase().includes("model") || ollamaRes.status===404;
+      return res.status(503).json({
+        error:   isMissing ? "OLLAMA_MODEL_NOT_FOUND" : "OLLAMA_ERROR",
+        message: isMissing ? "Model not found. Run: qwen2:1.5b" : "Ollama error: "+errText,
+      });
+    }
 
     const data  = await ollamaRes.json();
     console.log("OLLAMA REPLY:", data.message?.content?.slice(0,120));

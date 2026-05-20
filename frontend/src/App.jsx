@@ -511,7 +511,7 @@ function AdminView({ onLogout, sharedDocs, setSharedDocs, employees, setEmployee
 
   // Save a pasted policy doc to backend
   async function saveDoc(doc) {
-    await fetch("https://kartik-hr-bot-backend.onrender.com/docs", {
+    await fetch("http://localhost:3001/docs", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify(doc),
@@ -520,7 +520,7 @@ function AdminView({ onLogout, sharedDocs, setSharedDocs, employees, setEmployee
   }
 
   async function deleteDoc(id) {
-    await fetch(`https://kartik-hr-bot-backend.onrender.com/docs/${id}`,{method:"DELETE"}).catch(()=>{});
+    await fetch(`http://localhost:3001/docs/${id}`,{method:"DELETE"}).catch(()=>{});
     setSharedDocs(p=>p.filter(d=>d.id!==id));
     setDocOpen(null);
   }
@@ -846,7 +846,7 @@ function EmployeeView({ emp, onLogout, docs }) {
 
   // Check backend health on load
   useEffect(()=>{
-    fetch("https://kartik-hr-bot-backend.onrender.com/health")
+    fetch("http://localhost:3001/health")
       .then(r => setOllamaStatus(r.ok ? "ok" : "down"))
       .catch(()=> setOllamaStatus("down"));
   }, []);
@@ -859,7 +859,7 @@ function EmployeeView({ emp, onLogout, docs }) {
     setLoading(true);
     try {
       const history = msgs.slice(-4).map(m=>({ role:m.role, content:m.content }));
-      const res  = await fetch("https://kartik-hr-bot-backend.onrender.com/chat", {
+      const res  = await fetch("http://localhost:3001/chat", {
         method:  "POST",
         headers: { "Content-Type":"application/json" },
         body:    JSON.stringify({ systemPrompt:mkPrompt(emp, docs, txt), messages:[...history, {role:"user",content:txt}] }),
@@ -868,7 +868,7 @@ function EmployeeView({ emp, onLogout, docs }) {
       if (!res.ok) {
         const errMsg =
           data.error==="OLLAMA_NOT_RUNNING"    ? "⚠️ Ollama isn't running. Open a terminal and run: **ollama serve** — then try again." :
-          data.error==="OLLAMA_MODEL_NOT_FOUND"? "⚠️ Model not downloaded yet. Run: **ollama pull qwen2:1.5b** — then try again." :
+          data.error==="OLLAMA_MODEL_NOT_FOUND"? "⚠️ Model not downloaded yet. Run: **ollama pull llama3.2** — then try again." :
           `⚠️ Error: ${data.message||"Something went wrong."} — hr@kartikcorp.in`;
         setMsgs(p=>[...p,{role:"assistant",content:errMsg}]);
       } else {
@@ -892,7 +892,7 @@ function EmployeeView({ emp, onLogout, docs }) {
   const cis  = getCIs(emp);
   const QUICK = ["How do I apply for leave?","What all benefits do I have?","What are the onboarding Policies?","What are Flexible Work Options?","What are rewards and recoginition Plans?"];
   const statusColor = ollamaStatus==="ok" ? "#36C97E" : ollamaStatus==="down" ? "#FF5757" : "#8BA8CC";
-  
+  const statusLabel = ollamaStatus==="ok" ? "● Online" : ollamaStatus==="down" ? "● Offline (run: ollama serve)" : "● Checking...";
 
   return (
     <div style={{ display:"flex",flexDirection:"column",height:"100vh",background:E.bg,fontFamily:"'Inter',system-ui,sans-serif",overflow:"hidden" }}>
@@ -1065,7 +1065,7 @@ function Login({ onAdmin, onEmp, allEmps }) {
   const [status, setStatus] = useState(null);
 
   useEffect(()=>{
-    fetch("https://kartik-hr-bot-backend.onrender.com/health").then(r=>r.ok?setStatus("ok"):setStatus("down")).catch(()=>setStatus("down"));
+    fetch("http://localhost:3001/health").then(r=>r.ok?setStatus("ok"):setStatus("down")).catch(()=>setStatus("down"));
   },[]);
 
   if (pick) return (
@@ -1165,7 +1165,7 @@ export default function App() {
 
   // Load saved docs from backend on startup
   useEffect(()=>{
-    fetch("https://kartik-hr-bot-backend.onrender.com/docs")
+    fetch("http://localhost:3001/docs")
       .then(r=>r.json())
       .then(data=>{ setSharedDocs(Array.isArray(data)?data:[]); setDocsLoaded(true); })
       .catch(()=>setDocsLoaded(true));
