@@ -511,7 +511,7 @@ function AdminView({ onLogout, sharedDocs, setSharedDocs, employees, setEmployee
 
   // Save a pasted policy doc to backend
   async function saveDoc(doc) {
-    await fetch("http://localhost:3001/docs", {
+    await fetch("https://kartik-hr-bot-backend.onrender.com/docs", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify(doc),
@@ -520,7 +520,7 @@ function AdminView({ onLogout, sharedDocs, setSharedDocs, employees, setEmployee
   }
 
   async function deleteDoc(id) {
-    await fetch(`http://localhost:3001/docs/${id}`,{method:"DELETE"}).catch(()=>{});
+    await fetch(`https://kartik-hr-bot-backend.onrender.com/docs/${id}`,{method:"DELETE"}).catch(()=>{});
     setSharedDocs(p=>p.filter(d=>d.id!==id));
     setDocOpen(null);
   }
@@ -846,7 +846,7 @@ function EmployeeView({ emp, onLogout, docs }) {
 
   // Check backend health on load
   useEffect(()=>{
-    fetch("http://localhost:3001/health")
+    fetch("https://kartik-hr-bot-backend.onrender.com/health")
       .then(r => setOllamaStatus(r.ok ? "ok" : "down"))
       .catch(()=> setOllamaStatus("down"));
   }, []);
@@ -859,7 +859,7 @@ function EmployeeView({ emp, onLogout, docs }) {
     setLoading(true);
     try {
       const history = msgs.slice(-4).map(m=>({ role:m.role, content:m.content }));
-      const res  = await fetch("http://localhost:3001/chat", {
+      const res  = await fetch("https://kartik-hr-bot-backend.onrender.com/chat", {
         method:  "POST",
         headers: { "Content-Type":"application/json" },
         body:    JSON.stringify({ systemPrompt:mkPrompt(emp, docs, txt), messages:[...history, {role:"user",content:txt}] }),
@@ -1065,7 +1065,7 @@ function Login({ onAdmin, onEmp, allEmps }) {
   const [status, setStatus] = useState(null);
 
   useEffect(()=>{
-    fetch("http://localhost:3001/health").then(r=>r.ok?setStatus("ok"):setStatus("down")).catch(()=>setStatus("down"));
+    fetch("https://kartik-hr-bot-backend.onrender.com/health").then(r=>r.ok?setStatus("ok"):setStatus("down")).catch(()=>setStatus("down"));
   },[]);
 
   if (pick) return (
@@ -1165,7 +1165,7 @@ export default function App() {
 
   // Load saved docs from backend on startup
   useEffect(()=>{
-    fetch("http://localhost:3001/docs")
+    fetch("https://kartik-hr-bot-backend.onrender.com/docs")
       .then(r=>r.json())
       .then(data=>{ setSharedDocs(Array.isArray(data)?data:[]); setDocsLoaded(true); })
       .catch(()=>setDocsLoaded(true));
